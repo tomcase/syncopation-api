@@ -12,16 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tomcase/syncopation/controllers"
+	"github.com/tomcase/syncopation/middleware"
 )
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
-		log.Println(r.RequestURI)
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
-}
 
 func main() {
 	var wait time.Duration
@@ -32,7 +24,7 @@ func main() {
 
 	prefix := "/api"
 	controllers.RegisterHandlers(r, prefix)
-	r.Use(loggingMiddleware)
+	r.Use(middleware.LoggingMiddleware)
 
 	port := os.Getenv("SYNC_PORT")
 	if port == "" {

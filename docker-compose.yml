@@ -1,9 +1,0 @@
-version: "3.8"
-services:
-  api:
-    container_name: api
-    build: .
-    ports:
-      - ${SYNC_PORT}:7777
-    environment:
-      - SYNC_PORT=${SYNC_PORT}
