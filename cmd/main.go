@@ -24,21 +24,25 @@ func main() {
 
 	prefix := "/api"
 	controllers.RegisterHandlers(r, prefix)
+	r.Use(mux.CORSMethodMiddleware(r))
+	r.Use(middleware.CorsMiddleware)
 	r.Use(middleware.LoggingMiddleware)
 
-	port := os.Getenv("SYNC_PORT")
+	port := os.Getenv("API_PORT")
 	if port == "" {
-		log.Fatal("SYNC_PORT is has not been defined.")
+		log.Fatal("API_PORT is has not been defined.")
 	}
 
 	srv := &http.Server{
-		Addr: "0.0.0.0:7777",
+		Addr: "0.0.0.0:80",
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		Handler:      r, // Pass our instance of gorilla/mux in.
 	}
+
+	log.Println("Api Starting!")
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
@@ -66,6 +70,6 @@ func main() {
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// <-ctx.Done() if your application should wait for other services
 	// to finalize based on context cancellation.
-	log.Println("shutting down")
+	log.Println("Shutting down...")
 	os.Exit(0)
 }

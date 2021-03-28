@@ -11,10 +11,13 @@ import (
 func registerHealthController(r Registrar, prefix string) {
 	handlerPath := path.Join(prefix, "/")
 	log.Println(fmt.Sprintf("Registering %s", handlerPath))
-	r.HandleFunc(path.Join(prefix, "/"), healthCheckHandler).Methods("GET")
+	r.HandleFunc(path.Join(prefix, "/"), healthCheckHandler).Methods("GET", "OPTIONS")
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
 	// A very simple health check.
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
