@@ -8,10 +8,14 @@ import (
 	"path"
 )
 
-func registerHealthController(r Registrar, prefix string) {
-	handlerPath := path.Join(prefix, "/")
+type HealthController struct {
+	name string
+}
+
+func (c *HealthController) Register(r Registrar, prefix string) {
+	handlerPath := path.Join(prefix, c.name)
 	log.Println(fmt.Sprintf("Registering %s", handlerPath))
-	r.HandleFunc(path.Join(prefix, "/"), healthCheckHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc(path.Join(handlerPath, "/"), healthCheckHandler).Methods("GET", "OPTIONS")
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {

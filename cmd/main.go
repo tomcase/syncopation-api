@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/tomcase/syncopation/controllers"
-	"github.com/tomcase/syncopation/middleware"
+	"github.com/tomcase/syncopation-api/controllers"
+	"github.com/tomcase/syncopation-api/middleware"
 )
 
 func main() {
