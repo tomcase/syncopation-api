@@ -98,20 +98,18 @@ func listServers(w http.ResponseWriter, r *http.Request, ctx postgres.ServerServ
 	}
 
 	var servers []*Server
-	if response != nil {
-		for _, server := range response {
-			s := &Server{
-				Id:          server.Id,
-				Name:        server.Name,
-				Host:        server.Host,
-				Port:        strconv.Itoa(int(server.Port)),
-				User:        server.User,
-				Password:    server.Password,
-				Source:      server.SourcePath,
-				Destination: server.DestinationPath,
-			}
-			servers = append(servers, s)
+	for _, server := range response {
+		s := &Server{
+			Id:          server.Id,
+			Name:        server.Name,
+			Host:        server.Host,
+			Port:        strconv.Itoa(int(server.Port)),
+			User:        server.User,
+			Password:    server.Password,
+			Source:      server.SourcePath,
+			Destination: server.DestinationPath,
 		}
+		servers = append(servers, s)
 	}
 	json.NewEncoder(w).Encode(servers)
 }

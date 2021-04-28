@@ -122,21 +122,3 @@ func mapEntityToDto(s *Server) *ServerDto {
 		DestinationPath: s.DestinationPath,
 	}
 }
-
-func mapDtoToEntity(s *ServerDto) *Server {
-	id := pgtypeuuid.UUID{}
-	err := id.Set(s.Id)
-	if err != nil {
-		log.Panicln("Server has nil ID! PANIC")
-	}
-	return &Server{
-		Id:              id,
-		Name:            s.Name,
-		Host:            s.Host,
-		Port:            s.Port,
-		User:            s.User,
-		Password:        s.Password,
-		SourcePath:      s.SourcePath,
-		DestinationPath: s.DestinationPath,
-	}
-}
