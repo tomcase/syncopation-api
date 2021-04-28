@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/tomcase/syncopation-api/postgres"
+	"github.com/tomcase/syncopation-api/models"
 )
 
 type DbContext interface {
-	postgres.ServerService
+	models.ServerService
 }
 
 type Controller interface {

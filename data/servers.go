@@ -1,20 +1,15 @@
-package postgres
+package data
 
 import (
 	"context"
 	"log"
 
 	pgtypeuuid "github.com/jackc/pgtype/ext/gofrs-uuid"
+	"github.com/tomcase/syncopation-api/models"
 	"github.com/tomcase/syncopation-data/postgres"
 )
 
-type ServerService interface {
-	List(context.Context) ([]*ServerDto, error)
-	Insert(c context.Context, r *ServerDto) (*ServerDto, error)
-	Delete(c context.Context, r *ServerDto) error
-}
-
-func (*Db) List(c context.Context) ([]*ServerDto, error) {
+func (*Db) List(c context.Context) ([]*models.Server, error) {
 	dbpool, err := postgres.Connect(c)
 	if err != nil {
 		return nil, err
@@ -30,7 +25,7 @@ func (*Db) List(c context.Context) ([]*ServerDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	var servers []*ServerDto
+	var servers []*models.Server
 	for rows.Next() {
 		if err := rows.Err(); err != nil {
 			log.Printf("Failed to query servers: %v\n", err)
@@ -48,7 +43,7 @@ func (*Db) List(c context.Context) ([]*ServerDto, error) {
 	return servers, nil
 }
 
-func (*Db) Insert(c context.Context, r *ServerDto) (*ServerDto, error) {
+func (*Db) Insert(c context.Context, r *models.Server) (*models.Server, error) {
 	dbpool, err := postgres.Connect(c)
 	if err != nil {
 		return nil, err
@@ -70,7 +65,7 @@ func (*Db) Insert(c context.Context, r *ServerDto) (*ServerDto, error) {
 	return mapEntityToDto(&server), nil
 }
 
-func (*Db) Delete(c context.Context, r *ServerDto) error {
+func (*Db) Delete(c context.Context, r *models.Server) error {
 	dbpool, err := postgres.Connect(c)
 	if err != nil {
 		return err
@@ -99,19 +94,8 @@ type Server struct {
 	DestinationPath string
 }
 
-type ServerDto struct {
-	Id              string
-	Name            string
-	Host            string
-	Port            int32
-	User            string
-	Password        string
-	SourcePath      string
-	DestinationPath string
-}
-
-func mapEntityToDto(s *Server) *ServerDto {
-	return &ServerDto{
+func mapEntityToDto(s *Server) *models.Server {
+	return &models.Server{
 		Id:              s.Id.UUID.String(),
 		Name:            s.Name,
 		Host:            s.Host,

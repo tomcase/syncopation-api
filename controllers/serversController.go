@@ -9,12 +9,12 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/tomcase/syncopation-api/postgres"
+	"github.com/tomcase/syncopation-api/models"
 )
 
 type ServersController struct {
 	name string
-	ctx  postgres.ServerService
+	ctx  models.ServerService
 }
 
 func (c *ServersController) Register(r Registrar, prefix string) {
@@ -24,7 +24,7 @@ func (c *ServersController) Register(r Registrar, prefix string) {
 	r.HandleFunc(path.Join(handlerPath, "/{id}"), func(rw http.ResponseWriter, r *http.Request) { idHandler(rw, r, c.ctx) }).Methods(http.MethodDelete, http.MethodOptions)
 }
 
-func idHandler(w http.ResponseWriter, r *http.Request, ctx postgres.ServerService) {
+func idHandler(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	switch method := r.Method; method {
 	case http.MethodOptions:
 		return
@@ -33,10 +33,10 @@ func idHandler(w http.ResponseWriter, r *http.Request, ctx postgres.ServerServic
 	}
 }
 
-func deleteServer(w http.ResponseWriter, r *http.Request, ctx postgres.ServerService) {
+func deleteServer(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	vars := mux.Vars(r)
 
-	err := ctx.Delete(r.Context(), &postgres.ServerDto{Id: vars["id"]})
+	err := ctx.Delete(r.Context(), &models.Server{Id: vars["id"]})
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -45,7 +45,7 @@ func deleteServer(w http.ResponseWriter, r *http.Request, ctx postgres.ServerSer
 	w.WriteHeader(http.StatusOK)
 }
 
-func insertServer(w http.ResponseWriter, r *http.Request, ctx postgres.ServerService) {
+func insertServer(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	w.Header().Set("Content-Type", "application/json")
 
 	input := Server{}
@@ -57,7 +57,7 @@ func insertServer(w http.ResponseWriter, r *http.Request, ctx postgres.ServerSer
 		return
 	}
 
-	result, err := ctx.Insert(r.Context(), &postgres.ServerDto{
+	result, err := ctx.Insert(r.Context(), &models.Server{
 		Name:            input.Name,
 		Host:            input.Host,
 		Port:            int32(port),
@@ -87,7 +87,7 @@ func insertServer(w http.ResponseWriter, r *http.Request, ctx postgres.ServerSer
 	json.NewEncoder(w).Encode(s)
 }
 
-func listServers(w http.ResponseWriter, r *http.Request, ctx postgres.ServerService) {
+func listServers(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	w.Header().Set("Content-Type", "application/json")
 
 	response, err := ctx.List(r.Context())
@@ -114,7 +114,7 @@ func listServers(w http.ResponseWriter, r *http.Request, ctx postgres.ServerServ
 	json.NewEncoder(w).Encode(servers)
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request, ctx postgres.ServerService) {
+func rootHandler(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	switch method := r.Method; method {
 	case http.MethodOptions:
 		return

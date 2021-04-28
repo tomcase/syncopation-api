@@ -12,11 +12,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pkg/sftp"
-	"github.com/tomcase/syncopation-api/postgres"
+	"github.com/tomcase/syncopation-api/models"
 	"golang.org/x/crypto/ssh"
 )
 
-func Go(ctx postgres.ServerService) error {
+func Go(ctx models.ServerService) error {
 	response, err := ctx.List(context.Background())
 	if err != nil {
 		log.Println(err)
@@ -58,7 +58,7 @@ func Go(ctx postgres.ServerService) error {
 	return nil
 }
 
-func downloadDir(client *sftp.Client, dirPath string, server *postgres.ServerDto) error {
+func downloadDir(client *sftp.Client, dirPath string, server *models.Server) error {
 	fi, err := client.ReadDir(dirPath)
 	if err != nil {
 		return fmt.Errorf("failed to list files at destination '%s': %v", dirPath, err)
@@ -82,7 +82,7 @@ func downloadDir(client *sftp.Client, dirPath string, server *postgres.ServerDto
 	return nil
 }
 
-func downloadFile(client *sftp.Client, dirPath string, server *postgres.ServerDto) error {
+func downloadFile(client *sftp.Client, dirPath string, server *models.Server) error {
 	s := strings.Split(dirPath, string(os.PathSeparator))
 	dir := path.Join(server.DestinationPath, path.Join(s[1:len(s)-1]...))
 	err := os.MkdirAll("/incomplete", os.ModePerm)
