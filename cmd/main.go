@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/tomcase/syncopation-api/controllers"
 	"github.com/tomcase/syncopation-api/middleware"
+	"github.com/tomcase/syncopation-api/postgres"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	r := mux.NewRouter().StrictSlash(true)
 
 	prefix := "/api"
-	controllers.RegisterHandlers(r, prefix)
+	controllers.RegisterHandlers(r, prefix, &postgres.Db{})
 	r.Use(mux.CORSMethodMiddleware(r))
 	r.Use(middleware.CorsMiddleware)
 	r.Use(middleware.LoggingMiddleware)

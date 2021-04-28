@@ -1,0 +1,17 @@
+BEGIN;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS servers (
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	name VARCHAR(254) NOT NULL,
+	host VARCHAR(254) NOT NULL,
+	port int NOT NULL,
+	user_name VARCHAR(254) NOT NULL,
+	password VARCHAR(254) NOT NULL,
+	source VARCHAR(254) NOT NULL,
+	destination VARCHAR(254) NOT NULL,
+	PRIMARY KEY(id)
+);
+
+COMMIT;
