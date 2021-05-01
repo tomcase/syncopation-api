@@ -27,5 +27,5 @@ func runSync(w http.ResponseWriter, r *http.Request, ctx models.ServerService) {
 	}
 	w.WriteHeader(http.StatusOK)
 
-	sync.Go(ctx)
+	go sync.Go(ctx)
 }
