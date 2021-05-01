@@ -6,11 +6,10 @@ import (
 
 	pgtypeuuid "github.com/jackc/pgtype/ext/gofrs-uuid"
 	"github.com/tomcase/syncopation-api/models"
-	"github.com/tomcase/syncopation-data/postgres"
 )
 
-func (*Db) List(c context.Context) ([]*models.Server, error) {
-	dbpool, err := postgres.Connect(c)
+func (d *Db) List(c context.Context) ([]*models.Server, error) {
+	dbpool, err := d.Connect(c)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +42,8 @@ func (*Db) List(c context.Context) ([]*models.Server, error) {
 	return servers, nil
 }
 
-func (*Db) Insert(c context.Context, r *models.Server) (*models.Server, error) {
-	dbpool, err := postgres.Connect(c)
+func (d *Db) Insert(c context.Context, r *models.Server) (*models.Server, error) {
+	dbpool, err := d.Connect(c)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +64,8 @@ func (*Db) Insert(c context.Context, r *models.Server) (*models.Server, error) {
 	return mapEntityToDto(&server), nil
 }
 
-func (*Db) Delete(c context.Context, r *models.Server) error {
-	dbpool, err := postgres.Connect(c)
+func (d *Db) Delete(c context.Context, r *models.Server) error {
+	dbpool, err := d.Connect(c)
 	if err != nil {
 		return err
 	}

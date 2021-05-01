@@ -19,7 +19,7 @@ import (
 type Db struct {
 }
 
-func Migrate() error {
+func (*Db) Migrate() error {
 	db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONNECTION_STRING"))
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func Migrate() error {
 	return nil
 }
 
-func Connect(c context.Context) (*pgxpool.Pool, error) {
+func (*Db) Connect(c context.Context) (*pgxpool.Pool, error) {
 	dbconfig, err := pgxpool.ParseConfig(os.Getenv("POSTGRES_CONNECTION_STRING"))
 	if err != nil {
 		return nil, err

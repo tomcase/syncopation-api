@@ -24,6 +24,11 @@ func main() {
 	flag.Parse()
 
 	db := &data.Db{}
+	err := db.Migrate()
+	if err != nil {
+		log.Fatalf("Failed to Migrate: %v", err)
+	}
+
 	s := gocron.NewScheduler(time.UTC)
 	s.Every(1).Minutes().Do(func() {
 		log.Println("Starting Sync")
