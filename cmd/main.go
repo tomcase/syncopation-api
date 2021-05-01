@@ -10,10 +10,12 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
 	"github.com/tomcase/syncopation-api/controllers"
 	"github.com/tomcase/syncopation-api/data"
 	"github.com/tomcase/syncopation-api/middleware"
+	"github.com/tomcase/syncopation-api/sync"
 )
 
 func main() {
@@ -21,10 +23,19 @@ func main() {
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()
 
+	db := &data.Db{}
+	s := gocron.NewScheduler(time.UTC)
+	s.Every(1).Minutes().Do(func() {
+		log.Println("Starting Sync")
+		sync.Go(db)
+		log.Println("Finished Sync")
+	})
+	s.StartAsync()
+
 	r := mux.NewRouter().StrictSlash(true)
 
 	prefix := "/api"
-	controllers.RegisterHandlers(r, prefix, &data.Db{})
+	controllers.RegisterHandlers(r, prefix, db)
 	r.Use(mux.CORSMethodMiddleware(r))
 	r.Use(middleware.CorsMiddleware)
 	r.Use(middleware.LoggingMiddleware)
