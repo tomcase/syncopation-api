@@ -32,7 +32,10 @@ func main() {
 	s := gocron.NewScheduler(time.UTC)
 	s.Every(1).Minutes().Do(func() {
 		log.Println("Starting Sync")
-		sync.Go(db)
+		syncErr := sync.Go(db)
+		if syncErr != nil {
+			log.Printf("Failed to sync: %v\n", syncErr)
+		}
 		log.Println("Finished Sync")
 	})
 	s.SetMaxConcurrentJobs(1, gocron.RescheduleMode)

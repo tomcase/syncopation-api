@@ -63,6 +63,14 @@ func downloadDir(client *sftp.Client, dirPath string, server *models.Server) err
 	if err != nil {
 		return fmt.Errorf("failed to list files at destination '%s': %v", dirPath, err)
 	}
+	if len(fi) == 0 {
+		err = client.RemoveDirectory(dirPath)
+		if err != nil {
+			return fmt.Errorf("failed to delete directory '%s': %v", dirPath, err)
+		}
+		return nil
+	}
+
 	for _, file := range fi {
 		fp := path.Join(dirPath, file.Name())
 		if file.IsDir() {
@@ -82,8 +90,8 @@ func downloadDir(client *sftp.Client, dirPath string, server *models.Server) err
 	return nil
 }
 
-func downloadFile(client *sftp.Client, dirPath string, server *models.Server) error {
-	s := strings.Split(dirPath, string(os.PathSeparator))
+func downloadFile(client *sftp.Client, filePath string, server *models.Server) error {
+	s := strings.Split(filePath, string(os.PathSeparator))
 	dir := path.Join(server.DestinationPath, path.Join(s[1:len(s)-1]...))
 	err := os.MkdirAll("/incomplete", os.ModePerm)
 	if err != nil {
@@ -94,13 +102,13 @@ func downloadFile(client *sftp.Client, dirPath string, server *models.Server) er
 		return fmt.Errorf("could not create directory at %s: %v", dir, err)
 	}
 
-	incPath, err := copyToTempLocation(client, dirPath)
+	incPath, err := copyToTempLocation(client, filePath)
 	if err != nil {
 		return err
 	}
 	tmpFile, err := os.Open(incPath)
 	if err != nil {
-		return fmt.Errorf("could not open temp file at %s: %v", dirPath, err)
+		return fmt.Errorf("could not open temp file at %s: %v", filePath, err)
 	}
 	defer tmpFile.Close()
 
@@ -113,9 +121,9 @@ func downloadFile(client *sftp.Client, dirPath string, server *models.Server) er
 
 	bytes, err := io.Copy(df, tmpFile)
 	if err != nil {
-		return fmt.Errorf("could not copy remote file at %s: %v", dirPath, err)
+		return fmt.Errorf("could not copy remote file at %s: %v", filePath, err)
 	}
-	log.Printf("Downloaded %s - %d bytes copied\n", dirPath, bytes)
+	log.Printf("Downloaded %s - %d bytes copied\n", filePath, bytes)
 
 	err = os.Remove(incPath)
 	if err != nil {
@@ -125,10 +133,10 @@ func downloadFile(client *sftp.Client, dirPath string, server *models.Server) er
 	return nil
 }
 
-func copyToTempLocation(client *sftp.Client, dirPath string) (string, error) {
-	sf, err := client.Open(dirPath)
+func copyToTempLocation(client *sftp.Client, filePath string) (string, error) {
+	sf, err := client.Open(filePath)
 	if err != nil {
-		return "", fmt.Errorf("could not open remote file at %s: %v", dirPath, err)
+		return "", fmt.Errorf("could not open remote file at %s: %v", filePath, err)
 	}
 	defer sf.Close()
 
@@ -141,7 +149,12 @@ func copyToTempLocation(client *sftp.Client, dirPath string) (string, error) {
 
 	_, err = io.Copy(incFile, sf)
 	if err != nil {
-		return "", fmt.Errorf("could not copy remote file at %s: %v", dirPath, err)
+		return "", fmt.Errorf("could not copy remote file at %s: %v", filePath, err)
+	}
+
+	err = client.Remove(filePath)
+	if err != nil {
+		log.Printf("Failed to remove %s: %v\n", filePath, err)
 	}
 
 	return incPath, nil
