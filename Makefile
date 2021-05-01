@@ -6,7 +6,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 
 # Binary names
-BINARY_NAME=syncopation
+BINARY_NAME=api
 
 all: test build
 build: 
@@ -22,9 +22,4 @@ run:
 		./dist/$(BINARY_NAME) 
 build-prod:
 		$(GOBUILD) -ldflags "-s -w" -o ./dist/$(BINARY_NAME) -v ./cmd/main.go 
-docker-build:
-		docker build -t $(BINARY_NAME).
-docker-run:
-		docker build -t $(BINARY_NAME) .
-		docker run -it --rm --name $(BINARY_NAME) $(BINARY_NAME) 
 
