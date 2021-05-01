@@ -63,7 +63,7 @@ func downloadDir(client *sftp.Client, dirPath string, server *models.Server) err
 	if err != nil {
 		return fmt.Errorf("failed to list files at destination '%s': %v", dirPath, err)
 	}
-	if len(fi) == 0 {
+	if len(fi) == 0 && dirPath != server.SourcePath {
 		err = client.RemoveDirectory(dirPath)
 		if err != nil {
 			return fmt.Errorf("failed to delete directory '%s': %v", dirPath, err)
