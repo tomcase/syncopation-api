@@ -4,7 +4,7 @@ Utility to keep folders in sync across devices.
 
 ## Environment Variables
 
-`API_PORT` - The port you want to run the api on.
+`API_PORT` - The port you want to run the api on.  
 `POSTGRES_CONNECTION_STRING` - Connection string for postgres
 
 ## Migrate UP

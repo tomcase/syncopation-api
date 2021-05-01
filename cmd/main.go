@@ -30,6 +30,7 @@ func main() {
 		sync.Go(db)
 		log.Println("Finished Sync")
 	})
+	s.SetMaxConcurrentJobs(1, gocron.RescheduleMode)
 	s.StartAsync()
 
 	r := mux.NewRouter().StrictSlash(true)
